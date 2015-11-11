@@ -1,7 +1,7 @@
 /*:
 # Protocol Extension Limitations
 
-Also, you cannot extend a deferred protocol with support for a non-deferred protocol
+Also, you cannot implement a protocol from another protocol in an extension
 */
 
 protocol EqualTo {
@@ -9,6 +9,7 @@ protocol EqualTo {
 }
 
 // Error: Extension of protocol 'Equatable' cannot have an inheritance clause
+// This is because extensions cannot use inheritance. Even though we are technically "adopting" the EqualTo protocol, this is not something you can do. Maybe a language feature request?
 extension Equatable : EqualTo {
     func isEqualTo(other:Any) -> Bool {
         /* ... logic */
@@ -16,8 +17,21 @@ extension Equatable : EqualTo {
     }
 }
 
-/*:
-This is likely because deferred protocols aren't types and don't exist at runtime, only at compile time.
+// To get around this, you need to inherit from the protocol at the implementors definition
 
+protocol MyProtocol: EqualTo {
+}
+
+// And then implement the appropriate methods in an extension as default implementations
+
+extension MyProtocol {
+    func isEqualTo(other: Any) -> Bool {
+        return false
+    }
+}
+
+// Obviously this means that you can't add protocol support to system classes
+
+/*:
 [⬅ Previous](@previous) || [Next ➡](@next)
 */
